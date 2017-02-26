@@ -2,20 +2,24 @@ package Server;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.file.Paths;
 
 import com.google.gson.Gson;
 
 import Messages.*;
+import Server.Peer.Neighbor;
 
 class RequestHandler implements Runnable
 {
     private Socket socket;
     private BufferedReader in;
     private OutputStream out;
+    private Peer me;
     
-    RequestHandler( Socket socket )
+    RequestHandler( Socket socket, Peer me )
     {
+    	this.me = me;
         this.socket = socket;
     }
 
@@ -59,10 +63,36 @@ class RequestHandler implements Runnable
     
     
     
-    private void queryHit(QueryHit fromJson) {
-    	System.out.println("QueryHit");
+    private void queryHit(QueryHit qhit) throws IOException {
+    	close();
+    	
+    	
+    	if (me.getPeerId() == qhit.getMsg().getPeerID()) {
+    		setNewConn(me.getClientPort());
+    		propagateQHit(qhit);
+    	}
+    	
+    	peerIPClock replyTo = me.getMessages().getUpstream(qhit.getMsg());  	
+    		
+    	if (replyTo != null) {
+    		setNewConn(replyTo.peerId);
+    		propagateQHit(qhit);
+    	}
+    	
     	close();
 	}
+    
+    private void propagateQHit (QueryHit qhit) {
+    	Gson gson = new Gson();
+    	String qhitJson = gson.toJson(qhit,QueryHit.class);
+		new PrintStream(out).println(gson.toJson(new Message("QueryHit",qhitJson),Message.class));
+    }
+    
+    private void setNewConn(int peerId) throws UnknownHostException, IOException {
+    	Neighbor n = me.getNeighborIp(peerId);
+		socket = new Socket( n.ip, n.port );
+		out = new PrintStream( socket.getOutputStream() );
+    }
 
 	private void obtain(String fileName) {
     	

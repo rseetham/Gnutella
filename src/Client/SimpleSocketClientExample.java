@@ -11,7 +11,7 @@ public class SimpleSocketClientExample
     {
         if( args.length < 2 )
         {
-            System.out.println( "Usage: SimpleSocketClientExample <server> <path>" );
+            System.out.println( "Usage: SimpleSocketClientExample <peerID> <server> <port> <TTL> <>" );
             System.exit( 0 );
         }
         String server = args[ 0 ];
@@ -51,5 +51,9 @@ public class SimpleSocketClientExample
         {
             e.printStackTrace();
         }
+    }
+    
+    void sendObtain() {
+    	
     }
 }

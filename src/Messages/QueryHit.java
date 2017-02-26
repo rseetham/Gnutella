@@ -8,7 +8,6 @@ public class QueryHit {
 	
 	
 	public QueryHit(String fileName, Msg msg, String peerIP) {
-		super();
 		this.fileName = fileName;
 		this.msg = msg;
 		this.peerIP = peerIP;

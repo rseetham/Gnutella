@@ -1,6 +1,8 @@
 package Server;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class Peer {
@@ -14,9 +16,9 @@ public class Peer {
 	 */
 	private String ip;
 	/**
-	 * stores the port the peer's server is hosted on
+	 * stores the port the peer's client is hosted on
 	 */
-	private int serverPort;
+	private int clientPort;
 	/**
 	 * stores the list of files the peer has
 	 */
@@ -24,18 +26,26 @@ public class Peer {
 	/**
 	 * stores the list of neighbors the peer has
 	 */
-	private ArrayList<Neighbor> neighbors;
+	private HashMap<Integer,Neighbor> neighbors;
+	
+	private MessageHashMap messages;
 	
 	/** Constructor
 	 * @param id peer id
 	 * @param ip peer ip address
-	 * @param serverPort peer's server's port no
+	 * @param clientPort peer's client's port no
 	 */
-	public Peer (int id, String ip, int serverPort){
+	public Peer (int id, String ip, int clientPort){
 		this.id = id;
 		this.ip = ip;
-		this.serverPort = serverPort;
+		this.clientPort = clientPort;
 		this.files = new ArrayList<String>();
+		this.neighbors = new HashMap<Integer,Neighbor>();
+		messages = new MessageHashMap();
+	}
+	
+	MessageHashMap getMessages(){
+		return messages;
 	}
 	
 	/**
@@ -60,17 +70,21 @@ public class Peer {
 	}
 	
 	/**
-	 * @return server's ip address
+	 * @return client's ip address
 	 */
-	String getServerIp() {
-		return ip+":"+serverPort;
+	String getServeIp() {
+		return ip+":"+clientPort;
+	}
+	
+	int getClientPort() {
+		return clientPort;
 	}
 	
 	/**
-	 * @param serverPort
+	 * @param clientPort
 	 */
-	void setServerPort(int serverPort) {
-		this.serverPort = serverPort;
+	void setClientPort(int clientPort) {
+		this.clientPort = clientPort;
 	}
 	
 	/**
@@ -83,13 +97,17 @@ public class Peer {
 	/**
 	 * @return index list of neighbors
 	 */
-	ArrayList<Neighbor> getNeighborsList(){
-		return neighbors;
+	Collection<Neighbor> getNeighborsList(){
+		return neighbors.values();
 	}
 	
-	Boolean addNeighbor(String ip, int port) {
-		neighbors.add(new Neighbor(ip,port));
+	Boolean addNeighbor(int peerId, String ip, int port) {
+		neighbors.put(peerId, new Neighbor(ip,port));
 		return true;
+	}
+	
+	Neighbor getNeighborIp(int peerId) {
+		return neighbors.get(new Integer(peerId));
 	}
 	
 	/** Adds a file to the peer's index
@@ -121,11 +139,12 @@ public class Peer {
 	}
 	
 	public String toString() {
-				return "Server : " +ip+":"+serverPort + " Id : "+ id + " Files : "+ files;
-		
+		return "client : " +ip+":"+clientPort + " Id : "+ id + " Files : "+ files;
 	}
 	
 	class Neighbor{
+		
+
 		String ip;
 		int port;
 		
@@ -135,7 +154,7 @@ public class Peer {
 		}
 		
 		public String toString(){
-			return ip + ":" + port;
+			return " IP : "+ip + ":" + port;
 		}
 	}
 
