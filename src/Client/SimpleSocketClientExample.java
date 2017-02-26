@@ -1,21 +1,36 @@
 package Client;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
+
+import com.google.gson.Gson;
+
+import Messages.*;
 
 public class SimpleSocketClientExample
 {
+	static Socket socket;
+	static PrintStream out;
+	static BufferedReader in;
+	static int peerId;
+	static String server;
+	static int port;
+	static int seqid = 0;
+	
     public static void main( String[] args )
     {
         if( args.length < 2 )
         {
-            System.out.println( "Usage: SimpleSocketClientExample <peerID> <server> <port> <TTL> <>" );
+            System.out.println( "Usage: SimpleSocketClientExample <peerID> <server> <port> <TTL>" );
             System.exit( 0 );
         }
-        String server = args[ 0 ];
-        int port = Integer.parseInt(args[ 1 ]);
+        peerId = args[0]
+        server = args[ 1 ];
+        port = Integer.parseInt(args[ 2 ]);
 
         System.out.println( "Loading contents of URL: " + server );
 
@@ -53,7 +68,33 @@ public class SimpleSocketClientExample
         }
     }
     
-    void sendObtain() {
-    	
+    void sendQuery(String fileName, int ttl) throws Exception {
+    	Gson gson = new Gson();
+    	Query q = new Query(fileName, ttl, new Msg(peerId,seqid));
+    	Message m = new Message("Query",gson.toJson(q));
+    	socket = new Socket( server, port );
+    	out = new PrintStream( socket.getOutputStream() );
+    	out.println(gson.toJson(m));
+    	socket.close();
+    	out.close();
+    }
+    
+    void rcvQHitSendObtain(QueryHit qhit, String fileName) throws NumberFormatException, UnknownHostException, IOException {
+    	Gson gson = new Gson();
+    	Message m = new Message("Obtain",fileName);
+    	String[] ip = qhit.getPeerIP().split(":");
+    	socket = new Socket( ip[0], Integer.parseInt(ip[1]) );
+    	out = new PrintStream( socket.getOutputStream() );
+    	out.println(gson.toJson(m));
+    	in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
+    	// TODO write to file!!!
+    	socket.close();
+    	in.close();
+    }
+    
+    void close(){
+    	socket.close();
+    	in.close();
+    	out.close();
     }
 }
