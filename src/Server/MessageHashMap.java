@@ -39,8 +39,8 @@ public class MessageHashMap {
 	/**
 	 * add new message to the hashmap
 	 */
-	public void addMsg(Msg m, String peerIP){
-		messageMap.put(m,new peerIPClock(peerIP, systemClock.getAndIncrement()));
+	public void addMsg(Msg m, int peerId){
+		messageMap.put(m,new peerIPClock(peerId, systemClock.getAndIncrement()));
 	}
 	
 	public peerIPClock getUpstream(Msg msg) {
@@ -53,6 +53,10 @@ public class MessageHashMap {
 		return res;
 	}
 	
+	/**
+	 * get all messages in the hashmap
+	 */
+//	public Msg 
 	
 
 	/**
@@ -67,7 +71,7 @@ public class MessageHashMap {
 		while(it.hasNext()) {
 			Entry<Msg, peerIPClock> entry = it.next();
 			res+= entry.getKey() + ": "+entry.getValue().messageClock+" \n";
-			res += entry.getValue().peerIP;
+			res += entry.getValue().peerId;
 		}
 		return res;
 	}

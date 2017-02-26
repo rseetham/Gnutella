@@ -2,6 +2,7 @@ package Server;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,6 +12,7 @@ import com.google.gson.Gson;
 
 import Messages.*;
 import Server.Peer.Neighbor;
+import Server.MessageHashMap;
 
 class RequestHandler implements Runnable
 {
@@ -18,6 +20,8 @@ class RequestHandler implements Runnable
     private BufferedReader in;
     private OutputStream out;
     private Peer me;
+    private int remotePort;
+    private SocketAddress remoteAddress;
     
     RequestHandler( Socket socket, Peer me )
     {
@@ -43,11 +47,17 @@ class RequestHandler implements Runnable
             
             Message msg = gson.fromJson(line, Message.class);
             
+            remotePort = socket.getPort();
+            remoteAddress = socket.getRemoteSocketAddress();
+            
             if (msg.getMsgType().equals("Obtain")) {
             	obtain(msg.getMessage());
             }
             else if (msg.getMsgType().equals("QueryHit")) {
             	queryHit(gson.fromJson(msg.getMessage(),QueryHit.class));
+            }
+            else if (msg.getMsgType().equals("Query")) {
+            	query(gson.fromJson(msg.getMessage(),Query.class));
             }
             /*while( line != null && line.length() > 0 )
             {
@@ -131,5 +141,46 @@ class RequestHandler implements Runnable
              e.printStackTrace();
          }
          System.out.println( "Connection closed" );
+    }
+    
+    
+    public void query(Query query) throws IOException{//int msgID, int TTL, String filename){
+    	//	boolean msgFound = false;
+    	
+    	if(me.getFilesList().contains(query.getFileName()!=null)){//file found in filelist, query hit
+    		System.out.println("File Found");
+			Gson gson = new Gson();
+			QueryHit qh = new QueryHit(query.getFileName(), query.getMsg(),me.getIp());
+	    	Message m = new Message("QueryHit",gson.toJson(qh));
+	    	String[] ra = remoteAddress.toString().split(":");
+	    	socket = new Socket(ra[0], remotePort); 			
+	    	out = new PrintStream(socket.getOutputStream());
+	    	out.println(gson.toJson(m));
+	    	socket.close();
+	    	out.close();
+    	}
+    	else{
+	    	peerIPClock pic = me.getMessages().getUpstream(query.getMsg());
+	    	if(pic!=null){//message exists in messageHashMap, don't propagate
+	    		//	msgFound = true;
+	    		//do nothing else
+	    		System.out.println("Duplicate Message");
+	    	}
+	    	else {//message is new, propagate to neighbors
+	    		System.out.println("Message Being Sent To Neighbors");
+	    		for(Neighbor nb: me.getNeighborsList()){
+	    			Gson gson = new Gson();
+	    	    	Query q = new Query(query.getFileName(), query.getTTL(), new Msg(query.getMsg().getPeerID(),query.getMsg().getSeqID()));
+	    	    	Message m = new Message("Query",gson.toJson(q));
+	    	    	socket = new Socket( nb.ip, nb.port );
+	    	    	out = new PrintStream( socket.getOutputStream() );
+	    	    	out.println(gson.toJson(m));
+	    	    	socket.close();
+	    	    	out.close();
+	    		//	query(query);
+	    		}
+	    	}
+    	}
+    	
     }
 }

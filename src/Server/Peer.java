@@ -148,6 +148,14 @@ public class Peer {
 		String ip;
 		int port;
 		
+		public int getNbPort(){
+			return port;
+		}
+		
+		public String getNbIP(){
+			return ip;
+		}
+		
 		Neighbor (String ip, int port) {
 			this.ip = ip;
 			this.port = port;
