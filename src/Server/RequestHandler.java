@@ -154,8 +154,8 @@ class RequestHandler implements Runnable
 	    	Message m = new Message("QueryHit",gson.toJson(qh));
 	    	String[] ra = remoteAddress.toString().split(":");
 	    	socket = new Socket(ra[0], remotePort); 			
-	    	out = new PrintStream(socket.getOutputStream());
-	    	out.println(gson.toJson(m));
+	    	out = socket.getOutputStream();
+	    	new PrintStream(out).println(gson.toJson(m));
 	    	socket.close();
 	    	out.close();
     	}
@@ -173,8 +173,8 @@ class RequestHandler implements Runnable
 	    	    	Query q = new Query(query.getFileName(), query.getTTL(), new Msg(query.getMsg().getPeerID(),query.getMsg().getSeqID()));
 	    	    	Message m = new Message("Query",gson.toJson(q));
 	    	    	socket = new Socket( nb.ip, nb.port );
-	    	    	out = new PrintStream( socket.getOutputStream() );
-	    	    	out.println(gson.toJson(m));
+	    	    	out = socket.getOutputStream();
+	    	    	new PrintStream(out).println(gson.toJson(m));
 	    	    	socket.close();
 	    	    	out.close();
 	    		//	query(query);

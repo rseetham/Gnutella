@@ -74,7 +74,7 @@ public class SimpleSocketServer
  		}
  	}
     
-    public static void main( String[] args )
+    public static void main( String[] args ) throws IOException
     {
         if( args.length < 2 )
         {
