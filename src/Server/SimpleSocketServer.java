@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,9 +48,10 @@ public class SimpleSocketServer
  	 * Registers all the files in the TestFiles dir of the client
  	 */
  	static void setUpFiles(){
-     	File[] files = new File(Paths.get("./TestFiles/").toString()).listFiles();
+ 		System.out.println("SetUpFiles");
+     	File[] files = new File(Paths.get("../TestFiles/").toString()).listFiles();
  		for (File file : files) {
- 		    if (file.isFile()) {
+ 		    if (file.isFile()) {	
  		        try {
  					me.addFile(file.getName());
  				} catch (Exception e) {
@@ -57,21 +59,29 @@ public class SimpleSocketServer
  				}
  		    }
  		}
+ 		System.out.println(me.toString());
      }
  	
- 	static void setUpNetwork(String net) throws IOException {
- 		List<String> lines = Files.readAllLines(Paths.get("../"+net), Charset.forName("UTF-8"));
+ 	static void setUpNetwork(String net) throws Exception {
+ 		System.out.println("setUpNetwork : "+ net);
+ 		List<String> lines = Files.readAllLines(Paths.get("../"+net));
+ 		//System.out.println(lines);
  		Gson gson = new Gson();
- 		Network n;
+ 		for (int neighbor : new int[] {1024,1026})
+				me.addNeighbor(neighbor, "127.0.0.1", neighbor);
+ 		/*int[] a = {1024,1026};
+ 		Network n = new Network(me.getPeerId(), a);;
  		for(String line:lines){
- 			n = gson.fromJson(line, Network.class);
+ 			
+ 			//n = gson.fromJson(line, Network.class);
+ 			//System.out.println(n);
  			if (n.getPeerId() == me.getPeerId()) {
  				for (int neighbor : n.getNeighbors())
  					me.addNeighbor(neighbor, "127.0.0.1", neighbor);
  				break;
- 			}
- 			
- 		}
+ 			}	
+ 		}*/
+ 		System.out.println(me.toString());
  	}
     
     public static void main( String[] args ) throws IOException
@@ -90,23 +100,21 @@ public class SimpleSocketServer
 
         me = new Peer(peerid,"127.0.0.1",port);
         
-        setUpFiles();
-        setUpNetwork(network);
-        
-        
         try {
-        	
+        	setUpFiles(); 
+        	setUpNetwork(network);
+        
 			serverSocket = new ServerSocket( port );
 			runServer();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
 			e.printStackTrace();
 		}
     }
     
     class Network {
     	private int peerId;
-    	private int [] neighbors;
+    	private int[] neighbors;
 		
     	public Network(int peerId, int[] neighbors) {
 			this.peerId = peerId;
@@ -134,12 +142,23 @@ public class SimpleSocketServer
 			return neighbors;
 		}
 
-		/**
-		 * @param neighbors the neighbors to set
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
 		 */
-		public void setNeighbors(int[] neighbors) {
+		@Override
+		public String toString() {
+			return "Network [peerId=" + peerId + ", neighbors=" + neighbors + "]";
+		}
+
+/*		/**
+		 * @param neighbors the neighbors to set
+		 *//*
+		public void setNeighbors(List<Integer> neighbors) {
 			this.neighbors = neighbors;
 		}
+*/
+		
+		
     	
     	
     }

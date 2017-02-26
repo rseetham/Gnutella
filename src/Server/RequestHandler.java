@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,12 +44,13 @@ class RequestHandler implements Runnable
             // Echo lines back to the client until the client closes the connection or we receive an empty line
             String line = in.readLine();
             
-            System.out.println(line);
+            System.out.println("Accepted ("+me.getPeerId()+ "):" + line);
             
             Message msg = gson.fromJson(line, Message.class);
             
             remotePort = socket.getPort();
             remoteAddress = socket.getRemoteSocketAddress();
+
             
             if (msg.getMsgType().equals("Obtain")) {
             	obtain(msg.getMessage());
@@ -77,11 +79,31 @@ class RequestHandler implements Runnable
     
     private void queryHit(QueryHit qhit) throws IOException {
     	close();
-    	
-    	
+    	if (me.getFileToGet() == null)
+    		return;
+    	String fileName = me.getFileToGet();
     	if (me.getPeerId() == qhit.getMsg().getPeerID()) {
-    		setNewConn(me.getClientPort());
-    		propagateQHit(qhit);
+    		Message m = new Message("Obtain",fileName);
+        	String[] ip = qhit.getPeerIP().split(":");
+        	Path f = Paths.get("./TestFiles/"+fileName);
+        	//f.createNewFile();
+        	BufferedWriter writer = Files.newBufferedWriter(f, Charset.forName("US-ASCII"));
+    		Gson gson = new Gson();
+        	
+        	socket = new Socket( ip[0], Integer.parseInt(ip[1]) );
+        	out= socket.getOutputStream();
+        	new PrintStream(out).println(gson.toJson(m));
+        	in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
+        	// TODO write to file!!!
+        	String line = in.readLine();
+        	while (line != null && line.length() > 0){
+        		writer.write(line, 0, line.length());
+        	}
+        	
+        	writer.close();
+        	close();
+        	me.setFileToGet(null);
+        	return;
     	}
     	
     	peerIPClock replyTo = me.getMessages().getUpstream(qhit.getMsg());  	
@@ -95,6 +117,7 @@ class RequestHandler implements Runnable
 	}
     
     private void propagateQHit (QueryHit qhit) {
+    	System.out.println("QueryHit : ");
     	Gson gson = new Gson();
     	String qhitJson = gson.toJson(qhit,QueryHit.class);
     	System.out.println(qhitJson);
@@ -109,7 +132,7 @@ class RequestHandler implements Runnable
 
 	private void obtain(String fileName) {
     	
-    	
+    	System.out.println("Obtain!! "+me.getPeerId());
     	try {
     		Path f = Paths.get("./TestFiles/"+fileName);
 			//BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));

@@ -55,6 +55,8 @@ public class SimpleSocketClientExample
                 line = in.readLine();
             }
             
+            String qhit = new Gson().toJson(new QueryHit("test.txt",new Msg(peerId,100),"127.0.0.1:1060"));
+            out.println(qhit);
             System.out.println("closing client");
             // Close our streams
             in.close();

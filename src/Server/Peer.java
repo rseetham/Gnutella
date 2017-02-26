@@ -18,7 +18,7 @@ public class Peer {
 	/**
 	 * stores the port the peer's client is hosted on
 	 */
-	private int clientPort;
+	private int port;
 	/**
 	 * stores the list of files the peer has
 	 */
@@ -30,15 +30,17 @@ public class Peer {
 	
 	private MessageHashMap messages;
 	
+	private String fileToGet = null;
+	
 	/** Constructor
 	 * @param id peer id
 	 * @param ip peer ip address
 	 * @param clientPort peer's client's port no
 	 */
-	public Peer (int id, String ip, int clientPort){
+	public Peer (int id, String ip, int port){
 		this.id = id;
 		this.ip = ip;
-		this.clientPort = clientPort;
+		this.port = port;
 		this.files = new ArrayList<String>();
 		this.neighbors = new HashMap<Integer,Neighbor>();
 		messages = new MessageHashMap();
@@ -73,18 +75,18 @@ public class Peer {
 	 * @return client's ip address
 	 */
 	String getServeIp() {
-		return ip+":"+clientPort;
+		return ip+":"+port;
 	}
 	
-	int getClientPort() {
-		return clientPort;
+	int getPort() {
+		return port;
 	}
 	
 	/**
 	 * @param clientPort
 	 */
-	void setClientPort(int clientPort) {
-		this.clientPort = clientPort;
+	void setClientPort(int port) {
+		this.port = port;
 	}
 	
 	/**
@@ -138,8 +140,17 @@ public class Peer {
 		return false;
 	}
 	
+	public String getFileToGet() {
+		return fileToGet;
+	}
+
+	public void setFileToGet(String fileToGet) {
+		this.fileToGet = fileToGet;
+	}
+
 	public String toString() {
-		return "client : " +ip+":"+clientPort + " Id : "+ id + " Files : "+ files;
+		return "client : " +ip+":"+port + " Id : "+ id + " Files : "
+	+ files + "\nNeighbors : "+neighbors;
 	}
 	
 	class Neighbor{
