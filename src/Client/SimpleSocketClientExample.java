@@ -1,11 +1,10 @@
 package Client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.nio.file.*;
 
 import com.google.gson.Gson;
 
@@ -23,14 +22,14 @@ public class SimpleSocketClientExample
 	
     public static void main( String[] args )
     {
-        if( args.length < 2 )
+        if( args.length < 3 )
         {
-            System.out.println( "Usage: SimpleSocketClientExample <peerID> <server> <port> <TTL>" );
+            System.out.println( "Usage: SimpleSocketClientExample <peerID> <server> <TTL> <port> " );
             System.exit( 0 );
         }
-        peerId = args[0]
+        peerId = Integer.parseInt(args[0]);
         server = args[ 1 ];
-        port = Integer.parseInt(args[ 2 ]);
+        port = (args.length < 3) ? peerId : Integer.parseInt(args[ 2 ]);
 
         System.out.println( "Loading contents of URL: " + server );
 
@@ -83,16 +82,25 @@ public class SimpleSocketClientExample
     	Gson gson = new Gson();
     	Message m = new Message("Obtain",fileName);
     	String[] ip = qhit.getPeerIP().split(":");
+    	Path f = Paths.get("./TestFiles/"+fileName);
+    	//f.createNewFile();
+    	BufferedWriter writer = Files.newBufferedWriter(f, Charset.forName("US-ASCII"));
     	socket = new Socket( ip[0], Integer.parseInt(ip[1]) );
     	out = new PrintStream( socket.getOutputStream() );
     	out.println(gson.toJson(m));
     	in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
     	// TODO write to file!!!
+    	String line = in.readLine();
+    	while (line != null && line.length() > 0){
+    		writer.write(line, 0, line.length());
+    	}
+    	
+    	writer.close();
     	socket.close();
     	in.close();
     }
     
-    void close(){
+    void close() throws Exception{
     	socket.close();
     	in.close();
     	out.close();

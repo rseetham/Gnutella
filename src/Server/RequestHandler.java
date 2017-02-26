@@ -3,6 +3,8 @@ package Server;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.google.gson.Gson;
@@ -85,6 +87,7 @@ class RequestHandler implements Runnable
     private void propagateQHit (QueryHit qhit) {
     	Gson gson = new Gson();
     	String qhitJson = gson.toJson(qhit,QueryHit.class);
+    	System.out.println(qhitJson);
 		new PrintStream(out).println(gson.toJson(new Message("QueryHit",qhitJson),Message.class));
     }
     
@@ -98,13 +101,14 @@ class RequestHandler implements Runnable
     	
     	
     	try {
-    		File f = new File(Paths.get("/Users/apple/Documents/cs550/pa2/Gnutella/TestFiles/"+fileName).toString());
-			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
-			byte [] barray  = new byte [(int)f.length()];
-			bis.read(barray,0,barray.length);
+    		Path f = Paths.get("./TestFiles/"+fileName);
+			//BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
+			byte [] barray;  //= new byte [(int)f.length()];
+			//bis.read(barray,0,barray.length);
+			barray = Files.readAllBytes(f);
 			System.out.println("Sending file : "+ fileName);
 			out.write(barray, 0, barray.length);
-			bis.close();
+			//bis.close();
 			close();
     	
     	} catch (Exception e) {
