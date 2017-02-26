@@ -8,6 +8,10 @@ import java.util.Iterator;
 public class Peer {
 	
 	/**
+	 * stores the system clock - number of times QueryHit has run
+	 */
+	public static int systemClock;
+	/**
 	 * stores the peer id
 	 */
 	private int id;
