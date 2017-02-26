@@ -23,6 +23,10 @@ public class Peer {
 	 * stores the list of files the peer has
 	 */
 	private ArrayList<String> files;
+	/**
+	 * stores the list of neighbors the peer has
+	 */
+	private ArrayList<Neighbor> neighbors;
 	
 	/** Constructor
 	 * @param id peer id
@@ -78,6 +82,18 @@ public class Peer {
 		return files;
 	}
 	
+	/**
+	 * @return index list of neighbors
+	 */
+	ArrayList<Neighbor> getNeighborsList(){
+		return neighbors;
+	}
+	
+	Boolean addNeighbor(String ip, int port) {
+		neighbors.add(new Neighbor(ip,port));
+		return true;
+	}
+	
 	/** Adds a file to the peer's index
 	 * @param file name
 	 */
@@ -109,6 +125,20 @@ public class Peer {
 	public String toString() {
 				return "Server : " +ip+":"+serverPort + " Id : "+ id + " Files : "+ files;
 		
+	}
+	
+	class Neighbor{
+		String ip;
+		int port;
+		
+		Neighbor (String ip, int port) {
+			this.ip = ip;
+			this.port = port;
+		}
+		
+		public String toString(){
+			return ip + ":" + port;
+		}
 	}
 
 }
