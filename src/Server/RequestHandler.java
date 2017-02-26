@@ -53,13 +53,13 @@ class RequestHandler implements Runnable
 
             
             if (msg.getMsgType().equals("Obtain")) {
-            	obtain(msg.getMessage());
+            	handleObtain(msg.getMessage());
             }
             else if (msg.getMsgType().equals("QueryHit")) {
-            	queryHit(gson.fromJson(msg.getMessage(),QueryHit.class));
+            	handleQueryHit(gson.fromJson(msg.getMessage(),QueryHit.class));
             }
             else if (msg.getMsgType().equals("Query")) {
-            	query(gson.fromJson(msg.getMessage(),Query.class));
+            	handleQuery(gson.fromJson(msg.getMessage(),Query.class));
             }
             /*while( line != null && line.length() > 0 )
             {
@@ -77,64 +77,63 @@ class RequestHandler implements Runnable
     
     
     
-    private void queryHit(QueryHit qhit) throws IOException {
+    private void handleQueryHit(QueryHit qhit) throws Exception {
     	close();
     	if (me.getFileToGet() == null)
     		return;
-    	String fileName = me.getFileToGet();
+    	
     	if (me.getPeerId() == qhit.getMsg().getPeerID()) {
-    		Message m = new Message("Obtain",fileName);
-        	String[] ip = qhit.getPeerIP().split(":");
-        	Path f = Paths.get("./TestFiles/"+fileName);
-        	//f.createNewFile();
-        	BufferedWriter writer = Files.newBufferedWriter(f, Charset.forName("US-ASCII"));
-    		Gson gson = new Gson();
-        	
-        	socket = new Socket( ip[0], Integer.parseInt(ip[1]) );
-        	out= socket.getOutputStream();
-        	new PrintStream(out).println(gson.toJson(m));
-        	in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
-        	// TODO write to file!!!
-        	String line = in.readLine();
-        	while (line != null && line.length() > 0){
-        		writer.write(line, 0, line.length());
-        	}
-        	
-        	writer.close();
-        	close();
-        	me.setFileToGet(null);
+    		sendObtain(qhit);
         	return;
     	}
     	
     	peerIPClock replyTo = me.getMessages().getUpstream(qhit.getMsg());  	
     		
     	if (replyTo != null) {
-    		setNewConn(replyTo.peerId);
-    		propagateQHit(qhit);
+    		Neighbor n = me.getNeighborIp(replyTo.peerId);
+    		propagateQHit(qhit, n.ip, n.port);
     	}
-    	
     	close();
 	}
     
-    private void propagateQHit (QueryHit qhit) {
+    public void sendObtain(QueryHit qhit) throws Exception {
+    	String fileName = me.getFileToGet();
+    	Message m = new Message("Obtain",fileName);
+    	String[] ip = qhit.getPeerIP().split(":");
+    	Path f = Paths.get("./TestFiles/"+fileName);
+    	//f.createNewFile();
+    	BufferedWriter writer = Files.newBufferedWriter(f, Charset.forName("US-ASCII"));
+		Gson gson = new Gson();
+    	
+    	socket = new Socket( ip[0], Integer.parseInt(ip[1]) );
+    	out= socket.getOutputStream();
+    	new PrintStream(out).println(gson.toJson(m));
+    	in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
+    	String line = in.readLine();
+    	while (line != null && line.length() > 0){
+    		writer.write(line, 0, line.length());
+    	}
+    	
+    	writer.close();
+    	close();
+    	me.setFileToGet(null);
+    }
+    
+    private void propagateQHit (QueryHit qhit, String ip, int port) throws Exception {
     	System.out.println("QueryHit : ");
     	Gson gson = new Gson();
     	String qhitJson = gson.toJson(qhit,QueryHit.class);
     	System.out.println(qhitJson);
+    	socket = new Socket(ip, port); 			
+    	out = socket.getOutputStream();
 		new PrintStream(out).println(gson.toJson(new Message("QueryHit",qhitJson),Message.class));
     }
-    
-    private void setNewConn(int peerId) throws UnknownHostException, IOException {
-    	Neighbor n = me.getNeighborIp(peerId);
-		socket = new Socket( n.ip, n.port );
-		out = new PrintStream( socket.getOutputStream() );
-    }
 
-	private void obtain(String fileName) {
+	private void handleObtain(String fileName) {
     	
     	System.out.println("Obtain!! "+me.getPeerId());
     	try {
-    		Path f = Paths.get("./TestFiles/"+fileName);
+    		Path f = Paths.get("../TestFiles/"+fileName);
 			//BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
 			byte [] barray;  //= new byte [(int)f.length()];
 			//bis.read(barray,0,barray.length);
@@ -166,21 +165,16 @@ class RequestHandler implements Runnable
          System.out.println( "Connection closed" );
     }
     
-    
-    public void query(Query query) throws IOException{//int msgID, int TTL, String filename){
+    public void handleQuery(Query query) throws Exception{//int msgID, int TTL, String filename){
     	//	boolean msgFound = false;
     	
     	if(me.getFilesList().contains(query.getFileName()!=null)){//file found in filelist, query hit
     		System.out.println("File Found");
-			Gson gson = new Gson();
-			QueryHit qh = new QueryHit(query.getFileName(), query.getMsg(),me.getIp());
-	    	Message m = new Message("QueryHit",gson.toJson(qh));
-	    	String[] ra = remoteAddress.toString().split(":");
-	    	socket = new Socket(ra[0], remotePort); 			
-	    	out = socket.getOutputStream();
-	    	new PrintStream(out).println(gson.toJson(m));
-	    	socket.close();
-	    	out.close();
+    		QueryHit qh = new QueryHit(query.getFileName(), query.getMsg(),me.getIp());
+    		String[] ra = remoteAddress.toString().split(":");
+        	close();
+        	
+    		propagateQHit(qh,ra[0], remotePort);
     	}
     	else{
 	    	peerIPClock pic = me.getMessages().getUpstream(query.getMsg());
@@ -190,20 +184,31 @@ class RequestHandler implements Runnable
 	    		System.out.println("Duplicate Message");
 	    	}
 	    	else {//message is new, propagate to neighbors
-	    		System.out.println("Message Being Sent To Neighbors");
-	    		for(Neighbor nb: me.getNeighborsList()){
-	    			Gson gson = new Gson();
-	    	    	Query q = new Query(query.getFileName(), query.getTTL(), new Msg(query.getMsg().getPeerID(),query.getMsg().getSeqID()));
-	    	    	Message m = new Message("Query",gson.toJson(q));
-	    	    	socket = new Socket( nb.ip, nb.port );
-	    	    	out = socket.getOutputStream();
-	    	    	new PrintStream(out).println(gson.toJson(m));
-	    	    	socket.close();
-	    	    	out.close();
-	    		//	query(query);
-	    		}
+	    		propagateQuery(query);
+	    		close();
+	    		
 	    	}
     	}
     	
+    }
+    
+    public void propagateQuery(Query query) {
+    	System.out.println("Message Being Sent To Neighbors");
+		for(Neighbor nb: me.getNeighborsList()){
+	    	Query q = new Query(query.getFileName(), query.getTTL(), new Msg(query.getMsg().getPeerID(),query.getMsg().getSeqID()));
+	    	sendQuery(q,nb.ip,nb.port);
+		//	query(query);
+		}
+    }
+    
+    public void sendQuery(Query query, String ip, int port) throws Exception {
+    	System.out.println("Sending Query");
+    	Gson gson = new Gson();
+    	Message m = new Message("Query",gson.toJson(query));
+    	socket = new Socket( ip, port );
+    	out = socket.getOutputStream();
+    	new PrintStream(out).println(gson.toJson(m));
+    	socket.close();
+    	out.close();
     }
 }
