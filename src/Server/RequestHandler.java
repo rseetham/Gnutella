@@ -1,15 +1,18 @@
 package Server;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.nio.file.Paths;
+
+import com.google.gson.Gson;
+
+import Messages.*;
 
 class RequestHandler implements Runnable
 {
     private Socket socket;
     private BufferedReader in;
-    private PrintWriter out;
+    private OutputStream out;
     
     RequestHandler( Socket socket )
     {
@@ -22,17 +25,30 @@ class RequestHandler implements Runnable
         {
             System.out.println( "Received a connection" );
             in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
-            out = new PrintWriter( socket.getOutputStream() );
-
-
+            out = socket.getOutputStream();
+            //out = new PrintWriter( socket.getOutputStream() );
+            
+            Gson gson = new Gson();
+            
             // Echo lines back to the client until the client closes the connection or we receive an empty line
             String line = in.readLine();
-            while( line != null && line.length() > 0 )
+            
+            System.out.println(line);
+            
+            Message msg = gson.fromJson(line, Message.class);
+            
+            if (msg.getMsgType().equals("Obtain")) {
+            	obtain(msg.getMessage());
+            }
+            else if (msg.getMsgType().equals("QueryHit")) {
+            	queryHit(gson.fromJson(msg.getMessage(),QueryHit.class));
+            }
+            /*while( line != null && line.length() > 0 )
             {
-                out.println( "Echo: " + line );
+                out.println( "{\"msgType\":\"ack\"}" );
                 out.flush();
                 line = in.readLine();
-            }        
+            }  */      
            
         }
         catch( Exception e )
@@ -42,7 +58,33 @@ class RequestHandler implements Runnable
     }
     
     
-    // Close our connection
+    
+    private void queryHit(QueryHit fromJson) {
+    	System.out.println("QueryHit");
+    	close();
+	}
+
+	private void obtain(String fileName) {
+    	
+    	
+    	try {
+    		File f = new File(Paths.get("/Users/apple/Documents/cs550/pa2/Gnutella/TestFiles/"+fileName).toString());
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
+			byte [] barray  = new byte [(int)f.length()];
+			bis.read(barray,0,barray.length);
+			System.out.println("Sending file : "+ fileName);
+			out.write(barray, 0, barray.length);
+			bis.close();
+			close();
+    	
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+    
+
+	// Close our connection
     public void close() {
     	 try
          {

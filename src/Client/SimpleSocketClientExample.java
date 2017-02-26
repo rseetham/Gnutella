@@ -27,10 +27,11 @@ public class SimpleSocketClientExample
             // Create input and output streams to read from and write to the server
             PrintStream out = new PrintStream( socket.getOutputStream() );
             BufferedReader in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
-
-            // Follow the HTTP protocol of GET <path> HTTP/1.0 followed by an empty line
-            out.println( "Client Sending :" );
-            out.println(" Blaf Blah ");
+            
+            String file = "test.txt";
+            String obtain = "{\"msgType\":\"Obtain\",\"message\":\"" + file + "\"}";
+            
+            out.println(obtain);
 
             // Read data from the server until we finish reading the document
             String line = in.readLine();
@@ -40,7 +41,7 @@ public class SimpleSocketClientExample
                 line = in.readLine();
             }
             
-            out.println();
+            System.out.println("closing client");
             // Close our streams
             in.close();
             out.close();

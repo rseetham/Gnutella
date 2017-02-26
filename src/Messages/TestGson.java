@@ -32,6 +32,11 @@ public class TestGson {
 			System.out.println(gson.toJson(a));
 		}
 		
+		String file = "test.txt";
+        String obtain = "{\"msgType\":\"Obtain\",\"message\":\"" + file + "\"}";
+        Message o = gson.fromJson(obtain, Message.class);
+        System.out.println(o.getMsgType());
+		
 		
 	}
 
