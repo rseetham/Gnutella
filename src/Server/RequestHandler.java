@@ -185,6 +185,7 @@ class RequestHandler implements Runnable
 	    	}
 	    	else {//message is new, propagate to neighbors
 	    		propagateQuery(query);
+	    		me.getMessages().addMsg(query.getMsg(), remotePort);
 	    		close();
 	    		
 	    	}
@@ -192,7 +193,7 @@ class RequestHandler implements Runnable
     	
     }
     
-    public void propagateQuery(Query query) {
+    public void propagateQuery(Query query) throws Exception {
     	System.out.println("Message Being Sent To Neighbors");
 		for(Neighbor nb: me.getNeighborsList()){
 	    	Query q = new Query(query.getFileName(), query.getTTL(), new Msg(query.getMsg().getPeerID(),query.getMsg().getSeqID()));
