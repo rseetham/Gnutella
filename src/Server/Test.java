@@ -23,6 +23,7 @@ public class Test implements Runnable{
 	
 	
 	public Test(Peer me){
+		System.out.println("Hello!!! from test constructor");
 		this.me = me;
 		seqid = new AtomicInteger(0);
 	}

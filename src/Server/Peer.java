@@ -23,6 +23,7 @@ public class Peer {
 	 * stores the list of files the peer has
 	 */
 	private ArrayList<String> files;
+	
 	/**
 	 * stores the list of neighbors the peer has
 	 */

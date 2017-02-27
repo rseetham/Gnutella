@@ -23,6 +23,8 @@ public class SimpleSocketServer
 
     public static void runServer()
     {
+    	Test test = new Test(me);
+        new Thread(test).start();
         while( true )
         {
             try
@@ -33,10 +35,10 @@ public class SimpleSocketServer
 
                 // Pass the socket to the RequestHandler thread for processing
                 RequestHandler requestHandler = new RequestHandler(socket,me);
-                
-                Test test = new Test(me);
+               
                 new Thread(requestHandler).start();
-                new Thread(test).start();
+                System.out.println("++++++++++");
+                
                 //requestHandler.start();
             }
             catch (Exception e)
