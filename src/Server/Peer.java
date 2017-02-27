@@ -177,7 +177,7 @@ public class Peer {
 	 */
 	public String toString() {
 		return "client : " +ip+":"+port + " Id : "+ id + " Files : "
-	+ files + "\nNeighbors : "+neighbors + "\n MessageQ" + messages;
+	+ files + "\nNeighbors : "+neighbors + "\n MessageQ" + messages.toString();
 	}
 	
 	class Neighbor{	

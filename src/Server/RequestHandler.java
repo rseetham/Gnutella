@@ -19,8 +19,6 @@ class RequestHandler implements Runnable
     private BufferedReader in;
     private OutputStream out;
     private Peer me;
-    private int remotePort;
-    private SocketAddress remoteAddress;
     
     
     /** COnstructor
@@ -55,10 +53,6 @@ class RequestHandler implements Runnable
             
             Message msg = gson.fromJson(line, Message.class);
             
-            remotePort = socket.getPort();
-            System.out.println("Remote Port :"+ remotePort);
-            remoteAddress = socket.getRemoteSocketAddress();
-            System.out.println("Remote Add :"+ remoteAddress);
 
             
             if (msg.getMsgType().equals("Obtain")) {
@@ -69,13 +63,7 @@ class RequestHandler implements Runnable
             }
             else if (msg.getMsgType().equals("Query")) {
             	handleQuery(gson.fromJson(msg.getMessage(),Query.class));
-            }
-            /*while( line != null && line.length() > 0 )
-            {
-                out.println( "{\"msgType\":\"ack\"}" );
-                out.flush();
-                line = in.readLine();
-            }  */      
+            }     
            
         }
         catch( Exception e )
@@ -91,9 +79,7 @@ class RequestHandler implements Runnable
      * @throws Exception
      */
     private void handleQueryHit(QueryHit qhit) throws Exception {
-    	close();
-    	System.out.println("abc :"+ me);
-    	
+    	close();    	
     	if (me.getPeerId() == qhit.getMsg().getPeerID()) {
     		synchronized(me) {
     		System.out.println("I asked for the file");
@@ -124,7 +110,6 @@ class RequestHandler implements Runnable
     	Message m = new Message("Obtain",fileName);
     	String[] ip = qhit.getPeerIP().split(":");
     	Path f = Paths.get("./TestFiles/"+fileName);
-    	//f.createNewFile();
     	BufferedWriter writer = Files.newBufferedWriter(f, Charset.forName("US-ASCII"));
 		Gson gson = new Gson();
     	
@@ -212,11 +197,8 @@ class RequestHandler implements Runnable
     	if(me.getFilesList().contains(query.getFileName())){//file found in filelist, query hit
     		System.out.println("File Found");
     		QueryHit qh = new QueryHit(query.getFileName(), query.getMsg(),me.getIp()+":"+me.getPort());
-    		String[] ra = remoteAddress.toString().split(":");
-    		System.out.println(ra[0]);
         	close();
-        	
-    		propagateQHit(qh,ra[0], remotePort);
+    		propagateQHit(qh, "127.0.0.1" ,query.getFrom());
     	}
     	else{
 	    	peerIPClock pic = me.getMessages().getUpstream(query.getMsg());
@@ -224,11 +206,11 @@ class RequestHandler implements Runnable
 	    		System.out.println("Duplicate Message");
 	    	}
 	    	else {//message is new, propagate to neighbors
-	    		int ttl = query.getTTL();
+	    		int ttl = query.getTtl();
 	    		if (ttl > 0) {
-	    			query.setTTL(ttl-1);
+	    			query.setTtl(ttl-1);
 	    			propagateQuery(query);
-		    		me.getMessages().addMsg(query.getMsg(), remotePort);
+		    		me.getMessages().addMsg(query.getMsg(), query.getFrom());
 		    		close();
 	    		} 		
 	    	}
@@ -243,9 +225,8 @@ class RequestHandler implements Runnable
     public void propagateQuery(Query query) throws Exception {
     	System.out.println("Message Being Sent To Neighbors");
 		for(Neighbor nb: me.getNeighborsList()){
-	    	Query q = new Query(query.getFileName(), query.getTTL(), new Msg(query.getMsg().getPeerID(),query.getMsg().getSeqID()));
-	    	sendQuery(q,nb.ip,nb.port);
-		//	query(query);
+				Query q = new Query(query.getFileName(), query.getTtl(), query.getMsg(), me.getPeerId());
+				sendQuery(q,nb.ip,nb.port);
 		}
     }
     

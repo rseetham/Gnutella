@@ -86,7 +86,7 @@ public class SimpleSocketClientExample
      */
     void sendQuery(String fileName, int ttl) throws Exception {
     	Gson gson = new Gson();
-    	Query q = new Query(fileName, ttl, new Msg(peerId,seqid));
+    	Query q = new Query(fileName, ttl, new Msg(peerId,seqid),1024);
     	Message m = new Message("Query",gson.toJson(q));
     	socket = new Socket( server, port );
     	out = new PrintStream( socket.getOutputStream() );

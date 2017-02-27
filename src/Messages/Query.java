@@ -4,23 +4,51 @@ public class Query {
 	
 	private String fileName = "";
 	private int ttl = 0;
+	private int from;
 	private Msg msg;
 	
 	/** constructor
 	 * @param fileName
 	 * @param ttl
 	 * @param msg
+	 * @param from
 	 */
-	public Query(String fileName, int ttl, Msg msg)
+	public Query(String fileName, int ttl, Msg msg,int from)
 	{
 		this.fileName = fileName;
 		this.ttl = ttl;
 		this.msg = msg;
+		this.from = from;
 	}
 	
 	/**
-	 * @return
+	 * @return the ttl
 	 */
+	public int getTtl() {
+		return ttl;
+	}
+
+	/**
+	 * @param ttl the ttl to set
+	 */
+	public void setTtl(int ttl) {
+		this.ttl = ttl;
+	}
+
+	/**
+	 * @return the from
+	 */
+	public int getFrom() {
+		return from;
+	}
+
+	/**
+	 * @param from the from to set
+	 */
+	public void setFrom(int from) {
+		this.from = from;
+	}
+
 	public String getFileName() {
 		return fileName;
 	}
@@ -32,23 +60,6 @@ public class Query {
 		this.fileName = fileName;
 	}
 	
-	/**
-	 * @return
-	 */
-	public int getTTL() {
-		return ttl;
-	}
-	
-	/**
-	 * @param ttl
-	 */
-	public void setTTL(int ttl) {
-		this.ttl = ttl;
-	}
-	
-	/**
-	 * @return
-	 */
 	public Msg getMsg() {
 		return msg;
 	}

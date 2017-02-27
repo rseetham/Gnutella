@@ -16,6 +16,7 @@ public class SimpleSocketServer
     private static ServerSocket serverSocket;
     private static int port;
     private static Peer me;
+    private static boolean doQ;
    
 
     /**
@@ -23,8 +24,10 @@ public class SimpleSocketServer
      */
     public static void runServer()
     {
-    	Test test = new Test(me);
-        new Thread(test).start();
+    	if (doQ) {
+    		Test test = new Test(me);
+    		new Thread(test).start();
+    	}
         while( true )
         {
             try
@@ -101,7 +104,7 @@ public class SimpleSocketServer
     {
         if( args.length < 3 )
         {
-            System.out.println( "Usage: SimpleSocketServer <port> <network.json> <ttl> <peerid>" );
+            System.out.println( "Usage: SimpleSocketServer <port> <network.json> <ttl> <query?> <peerid>" );
             System.exit( 0 );
         }
         port = Integer.parseInt( args[ 0 ] );
@@ -110,7 +113,9 @@ public class SimpleSocketServer
         
         int ttl = Integer.parseInt( args[ 2 ] );
         
-        int peerid = (args.length < 4) ? port : Integer.parseInt(args[ 3 ]);
+        doQ =  (args.length < 4) ? false : true;
+        
+        int peerid = (args.length < 5) ? port : Integer.parseInt(args[ 4 ]);
         System.out.println( "Start server on port: " + port );
 
         me = new Peer(peerid,"127.0.0.1",port,ttl);

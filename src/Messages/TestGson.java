@@ -10,7 +10,7 @@ public class TestGson {
 		
 		Gson gson = new Gson();
 		
-		Query q = new Query("file.txt",5,new Msg(12,123));
+		Query q = new Query("file.txt",5,new Msg(12,123),1024);
 		
 		String query = gson.toJson(q);
 		

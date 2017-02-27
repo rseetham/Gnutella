@@ -28,7 +28,6 @@ public class Test implements Runnable{
 	 * @param me
 	 */
 	public Test(Peer me){
-		System.out.println("Hello!!! from test constructor");
 		this.me = me;
 		seqid = new AtomicInteger(0);
 		files = filesToLookUp(me.getPeerId()%10);
@@ -50,11 +49,10 @@ public class Test implements Runnable{
 		rand = new Random();
 		
 		try {
-			sameLookUpTest(files);
-			//diffLookUpTest(files);
+			//sameLookUpTest(files);
+			diffLookUpTest(files);
     	
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -76,17 +74,19 @@ public class Test implements Runnable{
 	
 	/** query a file held by another peer
 	 * @param files
+	 * @throws Exception 
 	 */
-	static void diffLookUpTest(ArrayList<String> files) {
+	static void diffLookUpTest(ArrayList<String> files) throws Exception {
+
 		int l = files.size();
-    	long startTime = System.nanoTime();
     	String file;
+    	long startTime = System.nanoTime();
     	for (int i  = 0; i < 1000; i++){
     		file = files.get(rand.nextInt(l));
-    		
+    		propagateQuery(file,me.getTtl());
     	}
     	long estimatedTime = System.nanoTime() - startTime;	    	
-    	System.out.println("Time taken to look up 1000 files "+estimatedTime/1000000000.0+"s");
+    	System.out.println("Time taken to query up a file 200 times "+estimatedTime/1000000000.0+"s");
 	}
 	
 	/** forward received query to neighbors by iterating through neighbor list
@@ -95,7 +95,7 @@ public class Test implements Runnable{
 	 * @throws Exception
 	 */
 	synchronized static void propagateQuery(String fileName, int ttl) throws Exception {
-    	Query q = new Query(fileName, ttl, new Msg(me.getPeerId(),seqid.getAndIncrement()));
+    	Query q = new Query(fileName, ttl, new Msg(me.getPeerId(),seqid.getAndIncrement()),me.getPeerId());
 		System.out.println("Message Being Sent To Neighbors");
 		for(Neighbor nb: me.getNeighborsList())
 			sendQuery(q,nb.ip,nb.port);
