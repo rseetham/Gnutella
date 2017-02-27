@@ -111,11 +111,21 @@ public class Peer {
 		return neighbors.values();
 	}
 	
+	/** add neighbor to peer's neighbor-hashmap
+	 * @param peerId
+	 * @param ip
+	 * @param port
+	 * @return
+	 */
 	Boolean addNeighbor(int peerId, String ip, int port) {
 		neighbors.put(peerId, new Neighbor(ip,port));
 		return true;
 	}
 	
+	/**
+	 * @param peerId
+	 * @return
+	 */
 	Neighbor getNeighborIp(int peerId) {
 		return neighbors.get(new Integer(peerId));
 	}
@@ -148,21 +158,29 @@ public class Peer {
 		return false;
 	}
 	
+	/**
+	 * @return
+	 */
 	public String getFileToGet() {
 		return fileToGet;
 	}
 
+	/**
+	 * @param fileToGet
+	 */
 	public void setFileToGet(String fileToGet) {
 		this.fileToGet = fileToGet;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return "client : " +ip+":"+port + " Id : "+ id + " Files : "
 	+ files + "\nNeighbors : "+neighbors + "\n MessageQ" + messages;
 	}
 	
-	class Neighbor{
-		
+	class Neighbor{	
 
 		String ip;
 		int port;

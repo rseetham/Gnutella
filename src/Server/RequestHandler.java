@@ -23,12 +23,20 @@ class RequestHandler implements Runnable
     private SocketAddress remoteAddress;
     
     
+    /** COnstructor
+     * @param socket
+     * @param me
+     */
     RequestHandler( Socket socket, Peer me )
     {
     	this.me = me;
         this.socket = socket;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Runnable#run()
+     * Accept connection, set up input/output streams. Get input and figure out whether the message was a obtain/query/query-hit
+     */
     public void run()
     {
         try
@@ -78,6 +86,10 @@ class RequestHandler implements Runnable
     
     
     
+    /** Respond to query hit if current peer was the one to send query, else forward query hit to neighbors
+     * @param qhit
+     * @throws Exception
+     */
     private void handleQueryHit(QueryHit qhit) throws Exception {
     	close();
     	System.out.println("abc :"+ me);
@@ -101,6 +113,10 @@ class RequestHandler implements Runnable
     	close();
 	}
     
+    /** Retrieve the file from the peer that has it
+     * @param qhit
+     * @throws Exception
+     */
     public void sendObtain(QueryHit qhit) throws Exception {
     	
     	
@@ -129,6 +145,12 @@ class RequestHandler implements Runnable
     	
     }
     
+    /** If queryhit occurs, broadcast it to neighbors
+     * @param qhit
+     * @param ip
+     * @param port
+     * @throws Exception
+     */
     private void propagateQHit (QueryHit qhit, String ip, int port) throws Exception {
     	System.out.println("QueryHit : ");
     	Gson gson = new Gson();
@@ -139,6 +161,9 @@ class RequestHandler implements Runnable
 		new PrintStream(out).println(gson.toJson(new Message("QueryHit",qhitJson),Message.class));
     }
 
+	/** Send the file requested
+	 * @param fileName
+	 */
 	private void handleObtain(String fileName) {
     	
     	System.out.println("Obtain!! "+me.getPeerId());
@@ -160,7 +185,9 @@ class RequestHandler implements Runnable
 	}
     
 
-	// Close our connection
+    /**
+     * Close our connection
+     */
     public void close() {
     	 try
          {
@@ -175,6 +202,10 @@ class RequestHandler implements Runnable
          System.out.println( "Connection closed" );
     }
     
+    /** Deals with 3 cases: if queried file is found in local storage, if query is a duplicate, or if query is new and needs to be recorded and forwarded
+     * @param query
+     * @throws Exception
+     */
     public void handleQuery(Query query) throws Exception{//int msgID, int TTL, String filename){
     	//	boolean msgFound = false;
     	
@@ -205,6 +236,10 @@ class RequestHandler implements Runnable
     	
     }
     
+    /** Forwards query to neighbors if file was not found
+     * @param query
+     * @throws Exception
+     */
     public void propagateQuery(Query query) throws Exception {
     	System.out.println("Message Being Sent To Neighbors");
 		for(Neighbor nb: me.getNeighborsList()){
@@ -214,6 +249,12 @@ class RequestHandler implements Runnable
 		}
     }
     
+    /** sets up connection and sends query to given server
+     * @param query
+     * @param ip
+     * @param port
+     * @throws Exception
+     */
     public void sendQuery(Query query, String ip, int port) throws Exception {
     	System.out.println("Sending Query");
     	Gson gson = new Gson();

@@ -14,6 +14,9 @@ public class MessageHashMap {
 	private AtomicInteger systemClock;
 	private static final int MAXSIZE = 25;//TODO set max message storage
 		
+	/**
+	 * Constructor
+	 */
 	public MessageHashMap(){
 		this.systemClock = new AtomicInteger(0);
 		this.messageMap = new ConcurrentHashMap<Msg, peerIPClock>();
@@ -39,6 +42,11 @@ public class MessageHashMap {
 		messageMap.put(m,new peerIPClock(peerId, systemClock.getAndIncrement()));
 	}
 	
+	/** Gets the peerIPClock (peerID of message sender + message timestamp) of a message. 
+	 * Clears map entries once storage limit of 50 is reached
+	 * @param msg
+	 * @return PeerIPClock object
+	 */
 	public peerIPClock getUpstream(Msg msg) {
 		peerIPClock res = messageMap.get(msg);
 		if (res == null)
@@ -48,12 +56,6 @@ public class MessageHashMap {
 			clearMap();
 		return res;
 	}
-	
-	/**
-	 * get all messages in the hashmap
-	 */
-//	public Msg 
-	
 
 	/**
 	 * print contents of the hashmap

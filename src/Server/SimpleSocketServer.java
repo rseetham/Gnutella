@@ -18,6 +18,9 @@ public class SimpleSocketServer
     private static Peer me;
    
 
+    /**
+     * establish socket connection
+     */
     public static void runServer()
     {
     	Test test = new Test(me);
@@ -61,6 +64,10 @@ public class SimpleSocketServer
  		System.out.println(me.toString());
      }
  	
+ 	/** read the peer IDs and their lists of neighbors from json file and populate the data structures to set up the network
+ 	 * @param net
+ 	 * @throws Exception
+ 	 */
  	static void setUpNetwork(String net) throws Exception {
  		System.out.println("setUpNetwork : "+ net);
  		List<String> lines = Files.readAllLines(Paths.get("../"+net));
@@ -82,6 +89,9 @@ public class SimpleSocketServer
  		System.out.println(me.toString());
  	}
  	
+ 	/**
+ 	 * create test files
+ 	 */
  	public static void setUpTestFiles() {
  		int n = me.getPeerId();
  		IntStream.range(0, 10).forEach(i -> me.addFile("text"+n*10+i+".txt"));

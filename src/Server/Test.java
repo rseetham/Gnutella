@@ -24,6 +24,9 @@ public class Test implements Runnable{
 	ArrayList<String> files;
 	
 	
+	/** constructor
+	 * @param me
+	 */
 	public Test(Peer me){
 		System.out.println("Hello!!! from test constructor");
 		this.me = me;
@@ -31,6 +34,10 @@ public class Test implements Runnable{
 		files = filesToLookUp(me.getPeerId()%10);
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 * sleep the thread for 20seconds to give time for all 10 peers to be set up
+	 */
 	@Override
 	public void run() {
 		try {
@@ -52,6 +59,10 @@ public class Test implements Runnable{
 		}
 	}
 	
+	/** query a file held by same peer
+	 * @param files
+	 * @throws Exception
+	 */
 	static void sameLookUpTest(ArrayList<String> files) throws Exception {
 		int l = files.size();
     	String file = files.get(rand.nextInt(l));
@@ -63,6 +74,9 @@ public class Test implements Runnable{
     	System.out.println("Time taken to query up a file 200 times "+estimatedTime/1000000000.0+"s");
 	}
 	
+	/** query a file held by another peer
+	 * @param files
+	 */
 	static void diffLookUpTest(ArrayList<String> files) {
 		int l = files.size();
     	long startTime = System.nanoTime();
@@ -75,6 +89,11 @@ public class Test implements Runnable{
     	System.out.println("Time taken to look up 1000 files "+estimatedTime/1000000000.0+"s");
 	}
 	
+	/** forward received query to neighbors by iterating through neighbor list
+	 * @param fileName
+	 * @param ttl
+	 * @throws Exception
+	 */
 	synchronized static void propagateQuery(String fileName, int ttl) throws Exception {
     	Query q = new Query(fileName, ttl, new Msg(me.getPeerId(),seqid.getAndIncrement()));
 		System.out.println("Message Being Sent To Neighbors");
@@ -83,6 +102,12 @@ public class Test implements Runnable{
 	}
 	
 	
+	/** send a query to a neighbor
+	 * @param q
+	 * @param server
+	 * @param port
+	 * @throws Exception
+	 */
 	synchronized static void sendQuery(Query q, String server, int port) throws Exception {
     	Gson gson = new Gson();
     	Message m = new Message("Query",gson.toJson(q));

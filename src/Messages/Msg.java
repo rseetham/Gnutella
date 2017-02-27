@@ -6,20 +6,37 @@ public class Msg {
 	private int PeerID;
 	private int SeqID;
 	
+	/** Constructor
+	 * @param PeerID
+	 * @param SeqID
+	 */
 	public Msg (int PeerID, int SeqID) {
 		this.PeerID = PeerID;
 		this.SeqID = SeqID;
 	}
 	
+	/**
+	 * @return
+	 */
 	public int getPeerID() {
 		return PeerID;
 	}
+	/**
+	 * @param peerID
+	 */
 	public void setPeerID(int peerID) {
 		PeerID = peerID;
 	}
+	/**
+	 * @return
+	 */
 	public int getSeqID() {
 		return SeqID;
 	}
+	
+	/**
+	 * @param seqID
+	 */
 	public void setSeqID(int seqID) {
 		SeqID = seqID;
 	}

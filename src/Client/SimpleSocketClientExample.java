@@ -20,6 +20,9 @@ public class SimpleSocketClientExample
 	static int port;
 	static int seqid = 0;
 	
+    /** Get peer ID, server IP and port and use to set up connection
+     * @param args
+     */
     public static void main( String[] args )
     {
         if( args.length < 3 )
@@ -76,6 +79,11 @@ public class SimpleSocketClientExample
         }
     }
     
+    /** Send query over socket connection
+     * @param fileName
+     * @param ttl
+     * @throws Exception
+     */
     void sendQuery(String fileName, int ttl) throws Exception {
     	Gson gson = new Gson();
     	Query q = new Query(fileName, ttl, new Msg(peerId,seqid));
@@ -87,6 +95,13 @@ public class SimpleSocketClientExample
     	out.close();
     }
     
+    /** Receive a query hit, send obtain to the server who sent the query hit
+     * @param qhit
+     * @param fileName
+     * @throws NumberFormatException
+     * @throws UnknownHostException
+     * @throws IOException
+     */
     void rcvQHitSendObtain(QueryHit qhit, String fileName) throws NumberFormatException, UnknownHostException, IOException {
     	Gson gson = new Gson();
     	Message m = new Message("Obtain",fileName);
@@ -109,6 +124,9 @@ public class SimpleSocketClientExample
     	in.close();
     }
     
+    /** close all connections
+     * @throws Exception
+     */
     void close() throws Exception{
     	socket.close();
     	in.close();
