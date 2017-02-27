@@ -32,15 +32,18 @@ public class Peer {
 	
 	private String fileToGet = null;
 	
+	private int ttl;
+	
 	/** Constructor
 	 * @param id peer id
 	 * @param ip peer ip address
 	 * @param clientPort peer's client's port no
 	 */
-	public Peer (int id, String ip, int port){
+	public Peer (int id, String ip, int port, int ttl){
 		this.id = id;
 		this.ip = ip;
 		this.port = port;
+		this.ttl = ttl;
 		this.files = new ArrayList<String>();
 		this.neighbors = new HashMap<Integer,Neighbor>();
 		messages = new MessageHashMap();
@@ -48,6 +51,10 @@ public class Peer {
 	
 	MessageHashMap getMessages(){
 		return messages;
+	}
+	
+	int getTtl(){
+		return ttl;
 	}
 	
 	/**
@@ -150,7 +157,7 @@ public class Peer {
 
 	public String toString() {
 		return "client : " +ip+":"+port + " Id : "+ id + " Files : "
-	+ files + "\nNeighbors : "+neighbors;
+	+ files + "\nNeighbors : "+neighbors + "\n MessageQ" + messages;
 	}
 	
 	class Neighbor{

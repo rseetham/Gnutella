@@ -33,7 +33,10 @@ public class SimpleSocketServer
 
                 // Pass the socket to the RequestHandler thread for processing
                 RequestHandler requestHandler = new RequestHandler(socket,me);
+                
+                Test test = new Test(me);
                 new Thread(requestHandler).start();
+                new Thread(test).start();
                 //requestHandler.start();
             }
             catch (Exception e)
@@ -86,19 +89,21 @@ public class SimpleSocketServer
     
     public static void main( String[] args ) throws IOException
     {
-        if( args.length < 2 )
+        if( args.length < 3 )
         {
-            System.out.println( "Usage: SimpleSocketServer <port> <network.json> <peerid>" );
+            System.out.println( "Usage: SimpleSocketServer <port> <network.json> <ttl><peerid>" );
             System.exit( 0 );
         }
         port = Integer.parseInt( args[ 0 ] );
         
         String network = args[ 1 ];
         
-        int peerid = (args.length < 3) ? port : Integer.parseInt(args[ 2 ]);
+        int ttl = Integer.parseInt( args[ 2 ] );
+        
+        int peerid = (args.length < 4) ? port : Integer.parseInt(args[ 3 ]);
         System.out.println( "Start server on port: " + port );
 
-        me = new Peer(peerid,"127.0.0.1",port);
+        me = new Peer(peerid,"127.0.0.1",port,ttl);
         
         try {
         	setUpFiles(); 

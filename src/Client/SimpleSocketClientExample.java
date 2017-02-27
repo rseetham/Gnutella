@@ -42,7 +42,7 @@ public class SimpleSocketClientExample
             PrintStream out = new PrintStream( socket.getOutputStream() );
             BufferedReader in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
             
-            String file = "test.txt";
+     /*       String file = "test.txt";
             String obtain = "{\"msgType\":\"Obtain\",\"message\":\"" + file + "\"}";
             
             out.println(obtain);
@@ -53,10 +53,17 @@ public class SimpleSocketClientExample
             {
                 System.out.println( line );
                 line = in.readLine();
-            }
+            }*/
             
-            String qhit = new Gson().toJson(new QueryHit("test.txt",new Msg(peerId,100),"127.0.0.1:1060"));
-            out.println(qhit);
+            Gson gson = new Gson();
+            
+/*            String query = gson.toJson(new Query("test.txt",4,new Msg(peerId,100)));
+            out.println(gson.toJson(new Message("Query", query)));
+            System.out.println("closing client");
+            */
+            
+            String qhit = gson.toJson(new QueryHit("test.txt",new Msg(peerId,100),"127.0.0.1:1060"));
+            out.println(gson.toJson(new Message("QueryHit", qhit)));
             System.out.println("closing client");
             // Close our streams
             in.close();
