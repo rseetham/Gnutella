@@ -85,7 +85,7 @@ class RequestHandler implements Runnable
     	if (me.getPeerId() == qhit.getMsg().getPeerID()) {
     		synchronized(me) {
     		System.out.println("I asked for the file");
-    		sendObtain(qhit);
+    		//sendObtain(qhit);
     		me.notify();
         	return;
     		}

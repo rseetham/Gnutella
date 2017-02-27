@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import com.google.gson.Gson;
 
@@ -20,19 +21,24 @@ public class Test implements Runnable{
 	private static Peer me;
 	static Random rand;
 	private static AtomicInteger seqid;
+	ArrayList<String> files;
 	
 	
 	public Test(Peer me){
 		System.out.println("Hello!!! from test constructor");
 		this.me = me;
 		seqid = new AtomicInteger(0);
+		files = filesToLookUp(me.getPeerId()%10);
 	}
 	
 	@Override
 	public void run() {
-		
+		try {
+			Thread.sleep(20000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		System.out.println("Hello!!!");
-		ArrayList<String> files = filesToLookUp(me.getPeerId()%10);
 		
 		rand = new Random();
 		
@@ -101,19 +107,11 @@ public class Test implements Runnable{
      */
     private static ArrayList<String> filesToLookUp(int peerno) {
     	ArrayList<String> files = new ArrayList<String>(23);
-    	files.add("text_3.txt");
-    	files.add("text_4.txt");
-    	files.add("text_5.txt");
-    	files.add("text_6.txt");
     	ArrayList<Integer> peers = new ArrayList<Integer>();
-    	peers.add(new Integer(1));
-    	peers.add(new Integer(2));
-    	peers.add(new Integer(3));
-    	peers.remove(new Integer(peerno));
-    	peers.forEach(no -> {
-    		for (int i = 0; i <= 9; i ++)
-    			files.add("text_"+no+""+i+".txt");
-    	});
+    	int p[] = {1024,1025,1026,1027,1028,1029,1030,1031,1032,1033};
+    	for (int n : p) {
+    		IntStream.range(0, 10).forEach(i -> files.add("text"+n*10+i+".txt")); 
+    	}
 		return files;
 	}
 
