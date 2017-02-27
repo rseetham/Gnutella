@@ -70,12 +70,13 @@ public class SimpleSocketServer
  		List<String> lines = Files.readAllLines(Paths.get("../"+net));
  		//System.out.println(lines);
  		Gson gson = new Gson();
- 		for (int neighbor : new int[] {1024,1026})
-				me.addNeighbor(neighbor, "127.0.0.1", neighbor);
- 		/*int[] a = {1024,1026};
- 		Network n = new Network(me.getPeerId(), a);;
+ 	//	for (int neighbor : new int[] {1024,1026})
+	//			me.addNeighbor(neighbor, "127.0.0.1", neighbor);
+ 		int[] a = new int[]{1024,1026};
+ 		SimpleSocketServer sss = new SimpleSocketServer();
+ 		Network n =sss.new Network(me.getPeerId(), a);
+ 	
  		for(String line:lines){
- 			
  			//n = gson.fromJson(line, Network.class);
  			//System.out.println(n);
  			if (n.getPeerId() == me.getPeerId()) {
@@ -83,7 +84,7 @@ public class SimpleSocketServer
  					me.addNeighbor(neighbor, "127.0.0.1", neighbor);
  				break;
  			}	
- 		}*/
+ 		}
  		System.out.println(me.toString());
  	}
     
