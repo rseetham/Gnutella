@@ -46,7 +46,6 @@ class RequestHandler implements Runnable
             
             Gson gson = new Gson();
             
-            // Echo lines back to the client until the client closes the connection or we receive an empty line
             String line = in.readLine();
             
             System.out.println("Accepted ("+me.getPeerId()+ "):" + line);
@@ -154,13 +153,10 @@ class RequestHandler implements Runnable
     	System.out.println("Obtain!! "+me.getPeerId());
     	try {
     		Path f = Paths.get("../TestFiles/"+fileName);
-			//BufferedInputStream bis = new BufferedInputStream(new FileInputStream(f));
-			byte [] barray;  //= new byte [(int)f.length()];
-			//bis.read(barray,0,barray.length);
+			byte [] barray;  
 			barray = Files.readAllBytes(f);
 			System.out.println("Sending file : "+ fileName);
 			out.write(barray, 0, barray.length);
-			//bis.close();
 			close();
     	
     	} catch (Exception e) {
@@ -209,8 +205,8 @@ class RequestHandler implements Runnable
 	    		int ttl = query.getTtl();
 	    		if (ttl > 0) {
 	    			query.setTtl(ttl-1);
-	    			propagateQuery(query);
-		    		me.getMessages().addMsg(query.getMsg(), query.getFrom());
+	    			me.getMessages().addMsg(query.getMsg(), query.getFrom());
+	    			propagateQuery(query);		    		
 		    		close();
 	    		} 		
 	    	}
@@ -226,8 +222,9 @@ class RequestHandler implements Runnable
     	System.out.println("Message Being Sent To Neighbors");
 		for(Neighbor nb: me.getNeighborsList()){
 			if ( query.getFrom() == nb.getNbPort()) {
-				Query q = new Query(query.getFileName(), query.getTtl(), query.getMsg(), me.getPeerId());
-				sendQuery(q,nb.ip,nb.port);
+				query.setFrom(me.getPeerId());
+				//Query q = new Query(query.getFileName(), query.getTtl(), query.getMsg(), me.getPeerId());
+				sendQuery(query,nb.ip,nb.port);
 			}
 		}
     }

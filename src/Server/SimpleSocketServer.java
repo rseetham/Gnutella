@@ -74,12 +74,10 @@ public class SimpleSocketServer
  	static void setUpNetwork(String net) throws Exception {
  		System.out.println("setUpNetwork : "+ net);
  		List<String> lines = Files.readAllLines(Paths.get("../"+net));
- 		System.out.println(lines);
  		Gson gson = new Gson();
  		Network n;
  		for(String line:lines){
  			n = gson.fromJson(line, Network.class);
- 			System.out.println(n);
  			if (n.peerid == me.getPeerId()) {
  				String[] nids = n.Neighbors.split(",");
  				for (String neighbor : nids) {
@@ -102,6 +100,7 @@ public class SimpleSocketServer
     
     public static void main( String[] args ) throws IOException
     {
+    	System.out.println("New!");
         if( args.length < 3 )
         {
             System.out.println( "Usage: SimpleSocketServer <port> <network.json> <ttl> <query?> <peerid>" );

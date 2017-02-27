@@ -43,9 +43,7 @@ public class Test implements Runnable{
 			Thread.sleep(20000);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
-		}
-		System.out.println("Hello!!!");
-		
+		}		
 		rand = new Random();
 		
 		try {
@@ -83,6 +81,7 @@ public class Test implements Runnable{
     	long startTime = System.nanoTime();
     	for (int i  = 0; i < 1000; i++){
     		file = files.get(rand.nextInt(l));
+    		System.out.println("Looking up file " + file);
     		propagateQuery(file,me.getTtl());
     	}
     	long estimatedTime = System.nanoTime() - startTime;	    	
