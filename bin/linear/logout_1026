@@ -1,0 +1,88 @@
+Usage: SimpleSocketServer <port> <network.json> <ttl> <query?> <peerid>
+Start server on port: 1026
+setUpNetwork : linearnet.json
+[{"peerid":1024,"Neighbors":"1025"}, {"peerid":1025,"Neighbors":"1024,1026"}, {"peerid":1026,"Neighbors":"1025,1027"}, {"peerid":1027,"Neighbors":"1026,1028"}, {"peerid":1028,"Neighbors":"1027,1029"}, {"peerid":1029,"Neighbors":"1028,1030"}, {"peerid":1030,"Neighbors":"1029,1031"}, {"peerid":1031,"Neighbors":"1030,1032"}, {"peerid":1032,"Neighbors":"1031,1033"}, {"peerid":1033,"Neighbors":"1032"}]
+Network [peerId=1024, neighbors=1025]
+Network [peerId=1025, neighbors=1024,1026]
+Network [peerId=1026, neighbors=1025,1027]
+client : 127.0.0.1:1026 Id : 1026 Files : [text102600.txt, text102601.txt, text102602.txt, text102603.txt, text102604.txt, text102605.txt, text102606.txt, text102607.txt, text102608.txt, text102609.txt]
+Neighbors : {1025= IP : 127.0.0.1:1025, 1027= IP : 127.0.0.1:1027}
+ MessageQ
+Listening for a connection
+Listening for a connection
+Received a connection
+Accepted (1026):{"msgType":"Query","message":"{\"fileName\":\"text102809.txt\",\"ttl\":9,\"from\":1025,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Message Being Sent To Neighbors
+Sending Query
+Connection closed
+Start server on port: 1026
+setUpNetwork : linearnet.json
+[{"peerid":1024,"Neighbors":"1025"}, {"peerid":1025,"Neighbors":"1024,1026"}, {"peerid":1026,"Neighbors":"1025,1027"}, {"peerid":1027,"Neighbors":"1026,1028"}, {"peerid":1028,"Neighbors":"1027,1029"}, {"peerid":1029,"Neighbors":"1028,1030"}, {"peerid":1030,"Neighbors":"1029,1031"}, {"peerid":1031,"Neighbors":"1030,1032"}, {"peerid":1032,"Neighbors":"1031,1033"}, {"peerid":1033,"Neighbors":"1032"}]
+Network [peerId=1024, neighbors=1025]
+Network [peerId=1025, neighbors=1024,1026]
+Network [peerId=1026, neighbors=1025,1027]
+client : 127.0.0.1:1026 Id : 1026 Files : [text102600.txt, text102601.txt, text102602.txt, text102603.txt, text102604.txt, text102605.txt, text102606.txt, text102607.txt, text102608.txt, text102609.txt]
+Neighbors : {1025= IP : 127.0.0.1:1025, 1027= IP : 127.0.0.1:1027}
+ MessageQ
+Listening for a connection
+Listening for a connection
+Received a connection
+Accepted (1026):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":9,\"from\":1025,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Message Being Sent To Neighbors
+Sending Query
+Sending Query
+Connection closed
+Listening for a connection
+Received a connection
+Accepted (1026):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":7,\"from\":1025,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Duplicate Message
+Listening for a connection
+Received a connection
+Accepted (1026):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":7,\"from\":1027,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Message Being Sent To Neighbors
+Sending Query
+Sending Query
+Connection closed
+Listening for a connection
+Received a connection
+Accepted (1026):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":5,\"from\":1025,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Duplicate Message
+Listening for a connection
+Received a connection
+Accepted (1026):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":5,\"from\":1027,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Message Being Sent To Neighbors
+Sending Query
+Sending Query
+Connection closed
+Listening for a connection
+Received a connection
+Accepted (1026):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":3,\"from\":1025,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Duplicate Message
+Listening for a connection
+Received a connection
+Accepted (1026):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":3,\"from\":1027,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Message Being Sent To Neighbors
+Sending Query
+Sending Query
+Connection closed
+Listening for a connection
+Received a connection
+Accepted (1026):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":1,\"from\":1025,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Duplicate Message
+Listening for a connection
+Received a connection
+Accepted (1026):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":1,\"from\":1027,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Message Being Sent To Neighbors
+Sending Query
+Sending Query
+Connection closed
+Start server on port: 1026
+setUpNetwork : linearnet.json
+[{"peerid":1024,"Neighbors":"1025"}, {"peerid":1025,"Neighbors":"1024,1026"}, {"peerid":1026,"Neighbors":"1025,1027"}, {"peerid":1027,"Neighbors":"1026,1028"}, {"peerid":1028,"Neighbors":"1027,1029"}, {"peerid":1029,"Neighbors":"1028,1030"}, {"peerid":1030,"Neighbors":"1029,1031"}, {"peerid":1031,"Neighbors":"1030,1032"}, {"peerid":1032,"Neighbors":"1031,1033"}, {"peerid":1033,"Neighbors":"1032"}]
+Network [peerId=1024, neighbors=1025]
+Network [peerId=1025, neighbors=1024,1026]
+Network [peerId=1026, neighbors=1025,1027]
+client : 127.0.0.1:1026 Id : 1026 Files : [text102600.txt, text102601.txt, text102602.txt, text102603.txt, text102604.txt, text102605.txt, text102606.txt, text102607.txt, text102608.txt, text102609.txt]
+Neighbors : {1025= IP : 127.0.0.1:1025, 1027= IP : 127.0.0.1:1027}
+ MessageQ
+Listening for a connection

@@ -1,0 +1,64 @@
+Usage: SimpleSocketServer <port> <network.json> <ttl> <query?> <peerid>
+Start server on port: 1033
+setUpNetwork : linearnet.json
+[{"peerid":1024,"Neighbors":"1025"}, {"peerid":1025,"Neighbors":"1024,1026"}, {"peerid":1026,"Neighbors":"1025,1027"}, {"peerid":1027,"Neighbors":"1026,1028"}, {"peerid":1028,"Neighbors":"1027,1029"}, {"peerid":1029,"Neighbors":"1028,1030"}, {"peerid":1030,"Neighbors":"1029,1031"}, {"peerid":1031,"Neighbors":"1030,1032"}, {"peerid":1032,"Neighbors":"1031,1033"}, {"peerid":1033,"Neighbors":"1032"}]
+Network [peerId=1024, neighbors=1025]
+Network [peerId=1025, neighbors=1024,1026]
+Network [peerId=1026, neighbors=1025,1027]
+Network [peerId=1027, neighbors=1026,1028]
+Network [peerId=1028, neighbors=1027,1029]
+Network [peerId=1029, neighbors=1028,1030]
+Network [peerId=1030, neighbors=1029,1031]
+Network [peerId=1031, neighbors=1030,1032]
+Network [peerId=1032, neighbors=1031,1033]
+Network [peerId=1033, neighbors=1032]
+client : 127.0.0.1:1033 Id : 1033 Files : [text103300.txt, text103301.txt, text103302.txt, text103303.txt, text103304.txt, text103305.txt, text103306.txt, text103307.txt, text103308.txt, text103309.txt]
+Neighbors : {1032= IP : 127.0.0.1:1032}
+ MessageQ
+Listening for a connection
+Start server on port: 1033
+setUpNetwork : linearnet.json
+[{"peerid":1024,"Neighbors":"1025"}, {"peerid":1025,"Neighbors":"1024,1026"}, {"peerid":1026,"Neighbors":"1025,1027"}, {"peerid":1027,"Neighbors":"1026,1028"}, {"peerid":1028,"Neighbors":"1027,1029"}, {"peerid":1029,"Neighbors":"1028,1030"}, {"peerid":1030,"Neighbors":"1029,1031"}, {"peerid":1031,"Neighbors":"1030,1032"}, {"peerid":1032,"Neighbors":"1031,1033"}, {"peerid":1033,"Neighbors":"1032"}]
+Network [peerId=1024, neighbors=1025]
+Network [peerId=1025, neighbors=1024,1026]
+Network [peerId=1026, neighbors=1025,1027]
+Network [peerId=1027, neighbors=1026,1028]
+Network [peerId=1028, neighbors=1027,1029]
+Network [peerId=1029, neighbors=1028,1030]
+Network [peerId=1030, neighbors=1029,1031]
+Network [peerId=1031, neighbors=1030,1032]
+Network [peerId=1032, neighbors=1031,1033]
+Network [peerId=1033, neighbors=1032]
+client : 127.0.0.1:1033 Id : 1033 Files : [text103300.txt, text103301.txt, text103302.txt, text103303.txt, text103304.txt, text103305.txt, text103306.txt, text103307.txt, text103308.txt, text103309.txt]
+Neighbors : {1032= IP : 127.0.0.1:1032}
+ MessageQ
+Listening for a connection
+Listening for a connection
+Received a connection
+Listening for a connection
+Received a connection
+Accepted (1033):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":0,\"from\":1032,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Accepted (1033):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":2,\"from\":1032,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Message Being Sent To Neighbors
+Sending Query
+Listening for a connection
+Received a connection
+Accepted (1033):{"msgType":"Query","message":"{\"fileName\":\"text102400.txt\",\"ttl\":0,\"from\":1032,\"msg\":{\"PeerID\":1024,\"SeqID\":0}}"}
+Connection closed
+Start server on port: 1033
+setUpNetwork : linearnet.json
+[{"peerid":1024,"Neighbors":"1025"}, {"peerid":1025,"Neighbors":"1024,1026"}, {"peerid":1026,"Neighbors":"1025,1027"}, {"peerid":1027,"Neighbors":"1026,1028"}, {"peerid":1028,"Neighbors":"1027,1029"}, {"peerid":1029,"Neighbors":"1028,1030"}, {"peerid":1030,"Neighbors":"1029,1031"}, {"peerid":1031,"Neighbors":"1030,1032"}, {"peerid":1032,"Neighbors":"1031,1033"}, {"peerid":1033,"Neighbors":"1032"}]
+Network [peerId=1024, neighbors=1025]
+Network [peerId=1025, neighbors=1024,1026]
+Network [peerId=1026, neighbors=1025,1027]
+Network [peerId=1027, neighbors=1026,1028]
+Network [peerId=1028, neighbors=1027,1029]
+Network [peerId=1029, neighbors=1028,1030]
+Network [peerId=1030, neighbors=1029,1031]
+Network [peerId=1031, neighbors=1030,1032]
+Network [peerId=1032, neighbors=1031,1033]
+Network [peerId=1033, neighbors=1032]
+client : 127.0.0.1:1033 Id : 1033 Files : [text103300.txt, text103301.txt, text103302.txt, text103303.txt, text103304.txt, text103305.txt, text103306.txt, text103307.txt, text103308.txt, text103309.txt]
+Neighbors : {1032= IP : 127.0.0.1:1032}
+ MessageQ
+Listening for a connection

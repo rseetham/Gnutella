@@ -111,9 +111,6 @@ public class Test implements Runnable{
 	synchronized static void sendQuery(Query q, String server, int port) throws Exception {
     	Gson gson = new Gson();
     	Message m = new Message("Query",gson.toJson(q));
-    	/*Socket socket;
-        BufferedReader in;
-        OutputStream out;*/
     	synchronized(me) {
     		Socket socket = new Socket( server, port );
         	PrintStream out = new PrintStream( socket.getOutputStream() );
@@ -131,11 +128,12 @@ public class Test implements Runnable{
      * @return list of 
      */
     private static ArrayList<String> filesToLookUp(int peerno) {
-    	ArrayList<String> files = new ArrayList<String>(23);
+    	ArrayList<String> files = new ArrayList<String>(90);
     	ArrayList<Integer> peers = new ArrayList<Integer>();
     	int p[] = {1024,1025,1026,1027,1028,1029,1030,1031,1032,1033};
     	for (int n : p) {
-    		IntStream.range(0, 10).forEach(i -> files.add("text"+n*10+i+".txt")); 
+    		if (n!= me.getPeerId())
+    			IntStream.range(0, 10).forEach(i -> files.add("text"+n*10+i+".txt")); 
     	}
 		return files;
 	}

@@ -225,8 +225,10 @@ class RequestHandler implements Runnable
     public void propagateQuery(Query query) throws Exception {
     	System.out.println("Message Being Sent To Neighbors");
 		for(Neighbor nb: me.getNeighborsList()){
+			if ( query.getFrom() == nb.getNbPort()) {
 				Query q = new Query(query.getFileName(), query.getTtl(), query.getMsg(), me.getPeerId());
 				sendQuery(q,nb.ip,nb.port);
+			}
 		}
     }
     
