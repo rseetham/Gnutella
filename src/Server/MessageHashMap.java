@@ -11,6 +11,22 @@ public class MessageHashMap {
 	
 	//stores message clock - current run number of QueryHit
 	ConcurrentHashMap<Msg, peerIPClock> messageMap;
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "MessageHashMap [messageMap=" + printMap() + ", systemClock=" + systemClock + "]";
+	}
+	
+	public String printMap() {
+		String res = "";
+		for (Msg key : messageMap.keySet()) {
+		    res += key + " " + messageMap.get(key);
+		}
+		return res;
+	}
+
 	private AtomicInteger systemClock;
 	private static final int MAXSIZE = 25;//TODO set max message storage
 		
@@ -32,14 +48,13 @@ public class MessageHashMap {
 				it.remove();
 			}
 		}
-		//map.entrySet().removeIf(messageClock -> ((systemClock - messageClock) > 10)); //only keep 10 messages
 	}
 
 	/**
 	 * add new message to the hashmap
 	 */
 	public void addMsg(Msg m, int peerId){
-		messageMap.put(m,new peerIPClock(peerId, systemClock.getAndIncrement()));
+		messageMap.put(m,new peerIPClock(systemClock.getAndIncrement(),peerId));
 	}
 	
 	/** Gets the peerIPClock (peerID of message sender + message timestamp) of a message. 
@@ -57,21 +72,5 @@ public class MessageHashMap {
 		return res;
 	}
 
-	/**
-	 * print contents of the hashmap
-	 */
-	public String toString(){
-		//Set set = messageMap.entrySet();
-	//	Iterator it = set.iterator();
-		String res = "";
-		Iterator<Entry<Msg, peerIPClock>> it = messageMap.entrySet().iterator();
-		// Display elements
-		while(it.hasNext()) {
-			Entry<Msg, peerIPClock> entry = it.next();
-			res+= entry.getKey() + ": "+entry.getValue().messageClock+" \n";
-			res += entry.getValue().peerId;
-		}
-		return res;
-	}
 
 }

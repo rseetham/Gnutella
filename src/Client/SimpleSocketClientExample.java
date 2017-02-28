@@ -31,7 +31,7 @@ public class SimpleSocketClientExample
             System.exit( 0 );
         }
         peerId = Integer.parseInt(args[0]);
-        server = args[ 1 ];
+        server = "127.0.0.1";
         port = (args.length < 3) ? peerId : Integer.parseInt(args[ 2 ]);
 
         System.out.println( "Loading contents of URL: " + server );
@@ -39,13 +39,13 @@ public class SimpleSocketClientExample
         try
         {
             // Connect to the server
-            Socket socket = new Socket( server, port );
+            Socket socket = new Socket( "localhost", port );
 
             // Create input and output streams to read from and write to the server
             PrintStream out = new PrintStream( socket.getOutputStream() );
             BufferedReader in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
             
-     /*       String file = "test.txt";
+           String file = "test.txt";
             String obtain = "{\"msgType\":\"Obtain\",\"message\":\"" + file + "\"}";
             
             out.println(obtain);
@@ -56,7 +56,7 @@ public class SimpleSocketClientExample
             {
                 System.out.println( line );
                 line = in.readLine();
-            }*/
+            }
             
             Gson gson = new Gson();
             
@@ -65,11 +65,11 @@ public class SimpleSocketClientExample
             System.out.println("closing client");
             */
             
-            String qhit = gson.toJson(new QueryHit("test.txt",new Msg(peerId,100),"127.0.0.1:1060"));
+       /*     String qhit = gson.toJson(new QueryHit("test.txt",new Msg(peerId,100),"127.0.0.1:1060"));
             out.println(gson.toJson(new Message("QueryHit", qhit)));
             System.out.println("closing client");
             // Close our streams
-            in.close();
+*/            in.close();
             out.close();
             socket.close();
         }

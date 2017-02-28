@@ -1,7 +1,5 @@
 package Server;
 
-import java.io.BufferedReader;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -22,14 +20,16 @@ public class Test implements Runnable{
 	static Random rand;
 	private static AtomicInteger seqid;
 	ArrayList<String> files;
+	private static Integer lock;
 	
 	
 	/** constructor
 	 * @param me
 	 */
-	public Test(Peer me){
-		this.me = me;
+	public Test(Peer me, Integer lock){
+		Test.me = me;
 		seqid = new AtomicInteger(0);
+		Test.lock = lock;
 		files = filesToLookUp(me.getPeerId()%10);
 	}
 	
@@ -40,7 +40,7 @@ public class Test implements Runnable{
 	@Override
 	public void run() {
 		try {
-			Thread.sleep(20000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}		
@@ -48,29 +48,29 @@ public class Test implements Runnable{
 		
 		try {
 			//sameLookUpTest(files);
+			
 			diffLookUpTest(files);
+			
+			// ALLOW THIS CALL FOR OBTAIN TEST!!
+			// obtainTest("test.txt");
     	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	/** query a file held by same peer
-	 * @param files
+	/** obtain test that downloads the file given
+	 * @param file
 	 * @throws Exception
 	 */
-	static void sameLookUpTest(ArrayList<String> files) throws Exception {
-		int l = files.size();
-    	String file = files.get(rand.nextInt(l));
-    	long startTime = System.nanoTime();
-    	for (int i  = 0; i < 1000; i++){
-    		propagateQuery(file,me.getTtl());
-    	}
-    	long estimatedTime = System.nanoTime() - startTime;	    	
-    	System.out.println("Time taken to query up a file 200 times "+estimatedTime/1000000000.0+"s");
+	static void obtainTest( String fileName) throws Exception {
+		me.setFileToGet(fileName);
+		System.out.println("Looking up file " + fileName);
+		propagateQuery(fileName,me.getTtl());
+		System.out.println("Got file " + fileName);
 	}
 	
-	/** query a file held by another peer
+	/** query test that queries a random files 200 times
 	 * @param files
 	 * @throws Exception 
 	 */
@@ -79,13 +79,16 @@ public class Test implements Runnable{
 		int l = files.size();
     	String file;
     	long startTime = System.nanoTime();
-    	for (int i  = 0; i < 1000; i++){
+    	for (int i  = 0; i < 200; i++){
     		file = files.get(rand.nextInt(l));
+    		me.setFileToGet(file);
     		System.out.println("Looking up file " + file);
     		propagateQuery(file,me.getTtl());
+    		System.out.println("Got file " + file);
     	}
     	long estimatedTime = System.nanoTime() - startTime;	    	
     	System.out.println("Time taken to query up a file 200 times "+estimatedTime/1000000000.0+"s");
+    	
 	}
 	
 	/** forward received query to neighbors by iterating through neighbor list
@@ -93,33 +96,38 @@ public class Test implements Runnable{
 	 * @param ttl
 	 * @throws Exception
 	 */
-	synchronized static void propagateQuery(String fileName, int ttl) throws Exception {
+	static void propagateQuery(String fileName, int ttl) throws Exception {
+		synchronized( me )
+    	{
     	Query q = new Query(fileName, ttl, new Msg(me.getPeerId(),seqid.getAndIncrement()),me.getPeerId());
 		System.out.println("Message Being Sent To Neighbors");
 		for(Neighbor nb: me.getNeighborsList())
 			sendQuery(q,nb.ip,nb.port);
+    	me.setFileToGet(fileName); 
+    	    if( lock.intValue() == 0 )
+    	    { 
+    	    	me.wait(30000);
+    	    }   	     
+    	    lock = Integer.valueOf(0);
+    	    
+    	}
+    	
 	}
-	
-	
+		
 	/** send a query to a neighbor
 	 * @param q
 	 * @param server
 	 * @param port
 	 * @throws Exception
 	 */
-	synchronized static void sendQuery(Query q, String server, int port) throws Exception {
+	static void sendQuery(Query q, String server, int port) throws Exception {
     	Gson gson = new Gson();
     	Message m = new Message("Query",gson.toJson(q));
-    	synchronized(me) {
     		Socket socket = new Socket( server, port );
         	PrintStream out = new PrintStream( socket.getOutputStream() );
         	out.println(gson.toJson(m));
         	socket.close();
         	out.close();
-        	me.setFileToGet(q.getFileName());
-        	me.wait();
-    	}
-    	
     }
 	
 	/**determine the files that this peer can look up
@@ -128,7 +136,6 @@ public class Test implements Runnable{
      */
     private static ArrayList<String> filesToLookUp(int peerno) {
     	ArrayList<String> files = new ArrayList<String>(90);
-    	ArrayList<Integer> peers = new ArrayList<Integer>();
     	int p[] = {1024,1025,1026,1027,1028,1029,1030,1031,1032,1033};
     	for (int n : p) {
     		if (n!= me.getPeerId())

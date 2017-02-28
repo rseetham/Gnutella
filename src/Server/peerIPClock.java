@@ -14,5 +14,13 @@ public class peerIPClock {
 		this.messageClock = messageClock;
 		this.peerId = peerId;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "peerIPClock [peerId=" + peerId + ", messageClock=" + messageClock + "]";
+	}
 	
 }

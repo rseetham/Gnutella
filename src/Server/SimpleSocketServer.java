@@ -15,8 +15,9 @@ public class SimpleSocketServer
 {
     private static ServerSocket serverSocket;
     private static int port;
-    private static Peer me;
+    static volatile Peer me;
     private static boolean doQ;
+    private static int lock;
    
 
     /**
@@ -25,7 +26,7 @@ public class SimpleSocketServer
     public static void runServer()
     {
     	if (doQ) {
-    		Test test = new Test(me);
+    		Test test = new Test(me, lock);
     		new Thread(test).start();
     	}
         while( true )
@@ -37,7 +38,7 @@ public class SimpleSocketServer
                 Socket socket = serverSocket.accept();
 
                 // Pass the socket to the RequestHandler thread for processing
-                RequestHandler requestHandler = new RequestHandler(socket,me);
+                RequestHandler requestHandler = new RequestHandler(socket,me, lock);
                
                 new Thread(requestHandler).start();
             }
@@ -64,7 +65,6 @@ public class SimpleSocketServer
  				}
  		    }
  		}
- 		System.out.println(me.toString());
      }
  	
  	/** read the peer IDs and their lists of neighbors from json file and populate the data structures to set up the network
@@ -87,11 +87,11 @@ public class SimpleSocketServer
  				break;
  			}	
  		}
- 		System.out.println(me.toString());
+ 		System.out.println("Peer Object :" + me.toString());
  	}
  	
  	/**
- 	 * create test files
+ 	 * create dummy test files for the peer for testing.
  	 */
  	public static void setUpTestFiles() {
  		int n = me.getPeerId();
@@ -100,7 +100,6 @@ public class SimpleSocketServer
     
     public static void main( String[] args ) throws IOException
     {
-    	System.out.println("New!");
         if( args.length < 3 )
         {
             System.out.println( "Usage: SimpleSocketServer <port> <network.json> <ttl> <query?> <peerid>" );
@@ -116,10 +115,14 @@ public class SimpleSocketServer
         
         int peerid = (args.length < 5) ? port : Integer.parseInt(args[ 4 ]);
         System.out.println( "Start server on port: " + port );
+        
+        lock = Integer.valueOf(0);
 
         me = new Peer(peerid,"127.0.0.1",port,ttl);
         
         try {
+        	
+        	// UNCOMMENT setUpFiles() AND COMMENT setUpTestFiles(); for OBTAIN TEST
         	//setUpFiles(); 
         	setUpTestFiles();
         	setUpNetwork(network);

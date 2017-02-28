@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import Messages.Msg;
 
 public class Peer {
 	
@@ -29,10 +34,12 @@ public class Peer {
 	 */
 	private HashMap<Integer,Neighbor> neighbors;
 	
-	private MessageHashMap messages;
+	public ConcurrentHashMap<Msg, peerIPClock> messages;
 	
-	private String fileToGet = null;
-	
+	public String fileToGet = null;
+	private AtomicInteger systemClock;
+	private static final int MAXSIZE = 25;
+		
 	private int ttl;
 	
 	/** Constructor
@@ -47,10 +54,11 @@ public class Peer {
 		this.ttl = ttl;
 		this.files = new ArrayList<String>();
 		this.neighbors = new HashMap<Integer,Neighbor>();
-		messages = new MessageHashMap();
+		messages = new ConcurrentHashMap<Msg, peerIPClock>();
+		this.systemClock = new AtomicInteger(0);
 	}
 	
-	MessageHashMap getMessages(){
+	ConcurrentHashMap<Msg, peerIPClock> getMessageMap(){
 		return messages;
 	}
 	
@@ -168,8 +176,41 @@ public class Peer {
 	/**
 	 * @param fileToGet
 	 */
-	public void setFileToGet(String fileToGet) {
+	public synchronized void setFileToGet(String fileToGet) {
 		this.fileToGet = fileToGet;
+	}
+	
+	/**
+	 * add new message to the hashmap
+	 */
+	public void addMsgToMap(Msg m, int peerId){
+		messages.put(m,new peerIPClock(systemClock.getAndIncrement(),peerId));
+	}
+	
+	/** Gets the peerIPClock (peerID of message sender + message timestamp) of a message. 
+	 * Clears map entries once storage limit of 50 is reached
+	 * @param msg
+	 * @return PeerIPClock object
+	 */
+	public peerIPClock getUpstreamofMsg(Msg msg) {
+		peerIPClock res = messages.get(msg);
+		if (res == null)
+			return null;
+		if (systemClock.get() % 50 == 0) 
+			clearMap();
+		return res;
+	}
+	
+	/**
+	 * clear half of the oldest entries in the hashmap
+	 */
+	public void clearMap(){
+		for(Iterator<Entry<Msg, peerIPClock>> it = messages.entrySet().iterator(); it.hasNext(); ) {
+			Entry<Msg, peerIPClock> entry = it.next();
+			if((systemClock.get() - entry.getValue().messageClock > MAXSIZE)) {
+				it.remove();
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -177,7 +218,15 @@ public class Peer {
 	 */
 	public String toString() {
 		return "client : " +ip+":"+port + " Id : "+ id + " Files : "
-	+ files + "\nNeighbors : "+neighbors + "\n MessageQ" + messages.toString();
+	+ files + "\nNeighbors : "+neighbors + "\n MessageQ" + printMap();
+	}
+	
+	public String printMap() {
+		String res = "";
+		for (Msg key : messages.keySet()) {
+		    res += key + " " + messages.get(key);
+		}
+		return res;
 	}
 	
 	class Neighbor{	
